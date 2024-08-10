@@ -4,8 +4,9 @@ import cross_icon from "../../assets/cross_icon.png";
 
 const ListProduct = () => {
   const [allproducts, setAllProducts] = useState([]);
+  const backendUrl = import.meta.env.VITE_APP_BACKEND_URL;
   const fetchInfo = async () => {
-    await fetch("https://shoppers-backend-kq7o.onrender.com/allproducts")
+    await fetch(`${backendUrl}/allproducts`)
       .then((res) => res.json())
       .then((data) => {
         setAllProducts(data);
@@ -16,17 +17,17 @@ const ListProduct = () => {
     fetchInfo();
   }, []);
 
-  const removeProduct =async(id)=>{
-    await fetch('https://shoppers-backend-kq7o.onrender.com/removeproduct',{
-      method: 'POST',
+  const removeProduct = async (id) => {
+    await fetch(`${backendUrl}/removeproduct`, {
+      method: "POST",
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({id: id})
-    })
+      body: JSON.stringify({ id: id }),
+    });
     await fetchInfo();
-  }
+  };
   return (
     <div className="list-product">
       <h1>All Products List</h1>
@@ -43,7 +44,10 @@ const ListProduct = () => {
         {allproducts.map((product, index) => {
           return (
             <>
-              <div key={index} className="listproduct-format-main listproduct-format">
+              <div
+                key={index}
+                className="listproduct-format-main listproduct-format"
+              >
                 <img
                   src={product.image}
                   alt=""
@@ -54,7 +58,7 @@ const ListProduct = () => {
                 <p>${product.new_price}</p>
                 <p>{product.category}</p>
                 <img
-                onClick={()=>removeProduct(product.id)}
+                  onClick={() => removeProduct(product.id)}
                   className="listproduct-remove-icon"
                   src={cross_icon}
                   alt=""

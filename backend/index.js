@@ -15,13 +15,19 @@ const multer = require("multer");
 const path = require("path")
 
 const cors = require("cors");
+require('dotenv').config();
 
 app.use(express.json());
 app.use(cors());
 
+const backendUrl = process.env.BACKEND_URL;
+
 // Database Connection with MongoDB
-mongoose.connect("mongodb+srv://muskanmandil:w1yxlkq4hMnOgEkn@cluster0.hh0qjyj.mongodb.net/e-commerce");
-// password: w1yxlkq4hMnOgEkn
+const dbUser = process.env.DB_USER;
+const dbPassword = process.env.DB_PASSWORD;
+const dbName = process.env.DB_NAME;
+mongoose.connect(`mongodb+srv://${dbUser}:${dbPassword}@cluster0.hh0qjyj.mongodb.net/${dbName}?retryWrites=true&w=majority&appName=Cluster0`);
+
 
 // API Creation
 app.get("/", (req, res) => {
@@ -44,7 +50,7 @@ app.use('/images', express.static('upload/images'))
 app.post("/upload", upload.single('product'), (req, res) => {
     res.json({
         success: 1,
-        image_url: `https://shoppers-backend-kq7o.onrender.com/images/${req.file.filename}`
+        image_url: `${backendUrl}/images/${req.file.filename}`
     })
 
 })

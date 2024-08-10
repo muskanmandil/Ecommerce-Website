@@ -4,12 +4,13 @@ import Item from "../Item/Item";
 
 const Popular = () => {
   const [popularProducts, setPopularProducts] = useState([]);
-  
+  const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
   useEffect(() => {
-    fetch("https://shoppers-backend-kq7o.onrender.com/popularinwomen")
+    fetch(`${backendUrl}/popularinwomen`)
       .then((res) => res.json())
       .then((data) => setPopularProducts(data));
-  }, []);
+  }, [backendUrl]);
 
   return (
     <div className="popular">

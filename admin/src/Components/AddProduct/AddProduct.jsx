@@ -11,6 +11,7 @@ const AddProduct = () => {
     new_price: "",
     old_price: "",
   });
+  const backendUrl = import.meta.env.VITE_APP_BACKEND_URL;
 
   const imageHandler = (e) => {
     setImage(e.target.files[0]);
@@ -26,9 +27,9 @@ const AddProduct = () => {
     let product = productDetails;
 
     let formData = new FormData();
-    formData.append('product', image);
+    formData.append("product", image);
 
-    await fetch("https://shoppers-backend-kq7o.onrender.com/upload", {
+    await fetch(`${backendUrl}/upload`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -43,7 +44,7 @@ const AddProduct = () => {
     if (responseData.success) {
       product.image = responseData.image_url;
       console.log(product);
-      await fetch("https://shoppers-backend-kq7o.onrender.com/addproduct", {
+      await fetch(`${backendUrl}/addproduct`, {
         method: "POST",
         headers: {
           Accept: "application/json",

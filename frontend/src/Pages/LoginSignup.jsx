@@ -8,6 +8,7 @@ const LoginSignup = () => {
     email: "",
     password: "",
   });
+  const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
   const changeHandler = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -16,7 +17,7 @@ const LoginSignup = () => {
   const login = async () => {
     console.log("Login function executed", formData);
     let responseData;
-    await fetch("https://shoppers-backend-kq7o.onrender.com/login", {
+    await fetch(`${backendUrl}/login`, {
       method: "POST",
       headers: {
         Accept: "application/form-data",
@@ -37,7 +38,7 @@ const LoginSignup = () => {
   const signup = async () => {
     console.log("Signup function executed", formData);
     let responseData;
-    await fetch("https://shoppers-backend-kq7o.onrender.com/signup", {
+    await fetch(`${backendUrl}/signup`, {
       method: "POST",
       headers: {
         Accept: "application/form-data",

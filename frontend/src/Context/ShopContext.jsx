@@ -13,14 +13,15 @@ const getDefaultCart = () => {
 const ShopContextProvider = (props) => {
   const [all_product, setAll_Product] = useState([]);
   const [cartItems, setCartItems] = useState(getDefaultCart());
+  const backendUrl=process.env.REACT_APP_BACKEND_URL;
 
   useEffect(() => {
-    fetch('https://shoppers-backend-kq7o.onrender.com/allproducts')
+    fetch(`${backendUrl}/allproducts`)
       .then((res) => res.json())
       .then((data) => setAll_Product(data));
 
     if (localStorage.getItem('auth-token')) {
-      fetch("https://shoppers-backend-kq7o.onrender.com/getcart", {
+      fetch(`${backendUrl}/getcart`, {
         method: 'POST',
         headers: {
           Accept: "application/form-data",
@@ -32,12 +33,12 @@ const ShopContextProvider = (props) => {
         .then((res) => res.json())
         .then((data) => setCartItems(data));
     }
-  }, []);
+  }, [backendUrl]);
 
   const addToCart = (itemId) => {
     setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] + 1 }));
     if (localStorage.getItem("auth-token")) {
-      fetch("https://shoppers-backend-kq7o.onrender.com/addtocart", {
+      fetch(`${backendUrl}/addtocart`, {
         method: "POST",
         headers: {
           Accept: "application/form-data",
@@ -53,7 +54,7 @@ const ShopContextProvider = (props) => {
   const removeFromCart = (itemId) => {
     setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] - 1 }));
     if (localStorage.getItem("auth-token")) {
-      fetch("https://shoppers-backend-kq7o.onrender.com/removefromcart", {
+      fetch(`${backendUrl}/removefromcart`, {
         method: "POST",
         headers: {
           Accept: "application/form-data",

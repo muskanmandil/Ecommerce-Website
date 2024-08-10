@@ -4,11 +4,12 @@ import Item from "../Item/Item";
 
 const NewCollections = () => {
   const [new_collections, setNew_Collection] = useState([]);
+  const backendUrl = process.env.REACT_APP_BACKEND_URL;
   useEffect(() => {
-    fetch("https://shoppers-backend-kq7o.onrender.com/newcollections")
+    fetch(`${backendUrl}/newcollections`)
       .then((res) => res.json())
       .then((data) => setNew_Collection(data));
-  }, []);
+  }, [backendUrl]);
   return (
     <div className="new-collections">
       <h1>NEW COLLECTIONS</h1>
