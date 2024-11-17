@@ -10,6 +10,7 @@ const app = express();
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
+const { createClient } = require('@supabase/supabase-js');
 
 // declaring path 
 const path = require("path")
@@ -19,8 +20,6 @@ require('dotenv').config();
 
 app.use(express.json());
 app.use(cors());
-
-const backendUrl = process.env.BACKEND_URL;
 
 // Database Connection with MongoDB
 const dbUser = process.env.DB_USER;
@@ -35,27 +34,45 @@ app.get("/", (req, res) => {
 })
 
 // Image Storage Engine
-const storage = multer.diskStorage({
-    // destination: './upload/images',
-    destination: (req, file, cb) => {
-        const tempDir = "/tmp";
-        cb(null, tempDir);
-    },
-    filename: (req, file, cb) => {
-        return cb(null, `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`)
-    }
-})
-
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage })
+
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Creating Upload Endpoint for images
 app.use('/images', express.static('upload/images'))
 
-app.post("/upload", upload.single('product'), (req, res) => {
+app.post("/upload", upload.single('product'), async (req, res) => {
+    const file = req.file;
+    if (!file) {
+        return res.status(400).send({ success: 0, error: "No file uploaded" });
+    }
+
+    const fileName = `products/${Date.now()}_${file.originalname}`;
+    const { data, error } = await supabase.storage
+        .from("product-images")
+        .upload(fileName, file.buffer, {
+            contentType: file.mimetype,
+            cacheControl: '3600',
+        });
+
+    if (error) {
+        console.error(error);
+        return res.status(500).send({ success: 0, error: "Failed to upload image" });
+    }
+
+    // Generate public URL
+    const { data: publicData } = supabase.storage
+        .from("product-images")
+        .getPublicUrl(fileName);
+
     res.json({
         success: 1,
-        image_url: `${backendUrl}/images/${req.file.filename}`
-    })
+        image_url: publicData.publicUrl,
+    });
 
 })
 
@@ -226,6 +243,15 @@ app.get('/popularinwomen', async (req, res) => {
     let popular_in_women = products.slice(0, 4);
     console.log("Popular in women Fetched");
     res.send(popular_in_women);
+})
+
+
+// Creating endpoint for related products data
+app.get('/relatedproducts', async (req, res) => {
+    let products = await Product.find({});
+    let relatedproducts = products.slice(0, 4);
+    console.log("RelatedProducts Fetched");
+    res.send(relatedproducts);
 })
 
 //  creating middleware to fetch user
